@@ -21,18 +21,20 @@ jobs:
                 password: ${{ secrets.GHCR_TOKEN }}
             - id: pack
               name: Setup Pack CLI
-              uses: buildpacks/github-actions/setup-pack@2.0.0
+              uses: buildpacks/github-actions/setup-pack@v3.0.0
             - id: package
               name: Package Buildpack
               run: |
                 #!/usr/bin/env bash
                 set -euo pipefail
 
-                VERSION="$(cat buildpack.toml | yj -t | jq -r .buildpack.version)"
-                pack package-buildpack --config package.toml --publish ${PACKAGE}:${VERSION}
-                DIGEST="$(crane digest ${PACKAGE}:${VERSION})"
+                BP_ID="$(cat buildpack.toml | yj -t | jq -r .buildpack.id)"
+                BP_VERSION="$(cat buildpack.toml | yj -t | jq -r .buildpack.version)"
+                pack package-buildpack --config package.toml --publish ${PACKAGE}:${BP_VERSION}
+                DIGEST="$(crane digest ${PACKAGE}:${BP_VERSION})"
 
-                echo "::set-output name=version::$VERSION"
+                echo "::set-output name=id::$BP_ID"
+                echo "::set-output name=version::$BP_VERSION"
                 echo "::set-output name=digest::$DIGEST"
               shell: bash
               env:
@@ -42,6 +44,6 @@ jobs:
               uses: docker://ghcr.io/buildpacks/actions/registry:main
               with:
                 token:   ${{ secrets.PUBLIC_REPO_TOKEN }}
-                id:      example/minecraft
+                id:      ${{ steps.package.outputs.id }}
                 version: ${{ steps.package.outputs.version }}
                 address: ghcr.io/jkutner/buildpacks/jkutner_null@${{ steps.package.outputs.digest }}
