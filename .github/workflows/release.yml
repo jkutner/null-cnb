@@ -1,4 +1,4 @@
-name: Buildpack Registry
+name: Release
 on:
     release:
         types:
@@ -19,23 +19,20 @@ jobs:
                 registry: ghcr.io
                 username: ${{ github.repository_owner }}
                 password: ${{ secrets.GHCR_TOKEN }}
-            - id: pack
-              name: Setup Pack CLI
-              uses: buildpacks/github-actions/setup-pack@v3.0.0
-            - id: package
+            - id: setup-pack
               name: Package Buildpack
+              uses: buildpacks/github-actions/setup-pack@v4.0.0
+            - id: package
               run: |
                 #!/usr/bin/env bash
                 set -euo pipefail
 
-                BP_ID="$(cat buildpack.toml | yj -t | jq -r .buildpack.id)"
-                BP_VERSION="$(cat buildpack.toml | yj -t | jq -r .buildpack.version)"
-                pack package-buildpack --config package.toml --publish ${PACKAGE}:${BP_VERSION}
-                DIGEST="$(crane digest ${PACKAGE}:${BP_VERSION})"
+                VERSION="$(cat buildpack.toml | yj -t | jq -r .buildpack.version)"
+                pack package-buildpack --config package.toml --publish ${PACKAGE}:${VERSION}
+                DIGEST="$(crane digest ${PACKAGE}:${VERSION})"
 
-                echo "::set-output name=id::$BP_ID"
-                echo "::set-output name=version::$BP_VERSION"
-                echo "::set-output name=digest::$DIGEST"
+                echo "::set-output name=version::$VERSION"
+                echo "::set-output name=address::${PACKAGE}@${DIGEST}"
               shell: bash
               env:
                 PACKAGE: ghcr.io/${{ github.repository_owner }}/buildpacks/jkutner_null
@@ -44,6 +41,6 @@ jobs:
               uses: docker://ghcr.io/buildpacks/actions/registry:main
               with:
                 token:   ${{ secrets.PUBLIC_REPO_TOKEN }}
-                id:      ${{ steps.package.outputs.id }}
+                id:      jkutner/null
                 version: ${{ steps.package.outputs.version }}
-                address: ghcr.io/jkutner/buildpacks/jkutner_null@${{ steps.package.outputs.digest }}
+                address: ${{ steps.package.outputs.address }}
