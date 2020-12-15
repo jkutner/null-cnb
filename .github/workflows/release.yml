@@ -38,7 +38,7 @@ jobs:
                 PACKAGE: ghcr.io/${{ github.repository_owner }}/buildpacks/jkutner_null
             - id: register
               name: Register Buildpack
-              uses: docker://ghcr.io/buildpacks/actions/registry:main
+              uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.0.0
               with:
                 token:   ${{ secrets.PUBLIC_REPO_TOKEN }}
                 id:      jkutner/null

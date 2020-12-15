@@ -2,8 +2,9 @@ api = "0.2"
 
 [buildpack]
 id = "jkutner/null"
-version = "1.0.2"
+version = "1.0.3"
 name = "␀"
+homepage = "https://github.com/jkutner/null-cnb"
 
 [[stacks]]
 id = "io.buildpacks.stacks.bionic"
