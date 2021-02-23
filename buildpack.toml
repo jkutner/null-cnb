@@ -2,9 +2,14 @@ api = "0.2"
 
 [buildpack]
 id = "jkutner/null"
-version = "1.0.3"
+version = "1.0.4"
 name = "␀"
 homepage = "https://github.com/jkutner/null-cnb"
+description = "This buildpack always passes. But it does nothing."
+keywords = ["no-op", "pass", "always"]
+
+[[buildpack.licenses]]
+type = "MIT"
 
 [[stacks]]
 id = "io.buildpacks.stacks.bionic"
