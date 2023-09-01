@@ -2,7 +2,7 @@ api = "0.9"
 
 [buildpack]
 id = "jkutner/null"
-version = "1.1.0"
+version = "1.2.0"
 name = "␀"
 homepage = "https://github.com/jkutner/null-cnb"
 description = "This buildpack always passes. But it does nothing."
